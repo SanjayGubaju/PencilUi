@@ -6,4 +6,3 @@ class Rectangle(Position, Size):
     def __init__(self):
         Position.__init__(self)
         Size.__init__(self)
-

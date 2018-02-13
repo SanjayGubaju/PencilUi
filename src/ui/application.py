@@ -14,7 +14,7 @@ class Application(Gtk.Window):
         # Application
         # Center window at startup
         self.set_position(Gtk.WindowPosition.CENTER)
-        self.resize(320, 480)
+        self.set_default_size(320, 480)
 
         # Quit on destroy
         self.connect("destroy", Gtk.main_quit)
@@ -72,11 +72,11 @@ class Application(Gtk.Window):
 
         # Add Rectangle
         if event.keyval == Gdk.KEY_r:
-            self.create_object("Rect")
+            self.create_object("Rectangle")
 
         # Add Oval
-        if event.keyval == Gdk.KEY_o:
-            self.create_object("Oval")
+        if event.keyval == Gdk.KEY_p:
+            self.create_object("Line")
 
         # Delete shape
         if event.keyval == Gdk.KEY_Delete or event.keyval == Gdk.KEY_KP_Delete:

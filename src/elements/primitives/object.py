@@ -21,7 +21,7 @@ class Object(Rectangle):
         self.z_index = 0
 
         self.fill_color = Color(0.25, 0.25, 0.25, 1.0)
-        self.stroke_color = Color(0, 0, 0, 1.0)
+        self.stroke_color = Color(1, 1, 1, 1)
         self.stroke_width = 0
 
     def draw(self, context):

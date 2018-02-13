@@ -1,10 +1,12 @@
 from math import pi
 
+import cairo
+
 from src.elements.primitives.object import Object
 
 
 class Rounded(Object):
-    __name__ = "Rect"
+    __name__ = "Rectangle"
 
     def __init__(self):
         Object.__init__(self)

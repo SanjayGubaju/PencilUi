@@ -1,5 +1,3 @@
-import cairo
-
 from src.elements.primitives.rectangle import Rectangle
 
 

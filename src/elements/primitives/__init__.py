@@ -17,11 +17,11 @@
 # ------------------------------------------------------
 # Fill (Color)
 # Stroke (Color, weight, Align(Center, Inside, Outside))
-
+from math import pi
 
 __all__ = ['NONE', 'NORTHWEST', 'NORTH', 'NORTHEAST', 'WEST', 'EAST', 'SOUTHWEST', 'SOUTH', 'SOUTHEAST', 'ANONYMOUS',
            'HORIZONTAL', 'VERTICAL', 'BOTH',
-           'get_direction']
+           'get_direction', 'degree_to_radian', 'radian_to_degree']
 
 NONE = -1
 
@@ -50,3 +50,11 @@ def get_direction(direction):
         return VERTICAL
     else:
         return NONE
+
+
+def degree_to_radian(degree):
+    return float(degree) * pi / 180.0
+
+
+def radian_to_degree(rad):
+    return float(rad) * 180 / pi

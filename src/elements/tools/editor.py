@@ -8,7 +8,6 @@ from gi.repository import Gtk, Gdk
 
 class Editor(Gtk.HPaned):
     def __init__(self):
-        print("Editor Initialized")
         Gtk.HPaned.__init__(self)
 
         # Add Canvas to the application
@@ -17,7 +16,6 @@ class Editor(Gtk.HPaned):
 
         # self.canvas.add_page()
         self.add(self.canvas)
-
 
     def init_canvas(self):
         self.canvas.connect("scroll-event", self.zoom_page)
