@@ -13,7 +13,7 @@ class Paper(Margins):
         # Background for paper
         context.save()
 
-        context.set_antialias(cairo.ANTIALIAS_NONE)
+        context.set_antialias(cairo.ANTIALIAS_GRAY)
         context.set_line_width(1.0 / context.get_matrix()[0])
         context.rectangle(self.x, self.y, self.width, self.height)
 

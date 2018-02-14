@@ -11,7 +11,7 @@ class Selection(Rectangle):
 
     def draw(self, context):
         if self.is_active:
-            context.set_antialias(cairo.ANTIALIAS_NONE)
+            context.set_antialias(cairo.ANTIALIAS_GRAY)
 
             # Draw selection rectangle
             dash = list()

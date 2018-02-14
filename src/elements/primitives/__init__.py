@@ -52,6 +52,27 @@ def get_direction(direction):
         return NONE
 
 
+# Returns opposite direction for a direction
+def opposite(direction):
+    if direction == NORTHEAST:
+        return SOUTHWEST
+    elif direction == NORTH:
+        return SOUTH
+    elif direction == NORTHWEST:
+        return SOUTHEAST
+    elif direction == SOUTHEAST:
+        return NORTHWEST
+    elif direction == SOUTH:
+        return NORTH
+    elif direction == SOUTHWEST:
+        return NORTHEAST
+    elif direction == WEST:
+        return EAST
+    elif direction == EAST:
+        return WEST
+    return NONE
+
+
 def degree_to_radian(degree):
     return float(degree) * pi / 180.0
 

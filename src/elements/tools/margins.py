@@ -5,7 +5,7 @@ class Margins(Rectangle):
     def __init__(self):
         Rectangle.__init__(self)
 
-        self.active = True
+        self.is_active = True
 
         # Margin properties
         self.top = 0

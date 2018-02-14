@@ -1,9 +1,10 @@
 import cairo
 import gi
 
-from src.elements.primitives import ANONYMOUS
+from src.elements.primitives import ANONYMOUS, opposite, SOUTHEAST, NONE
 from src.elements.primitives.selection import Selection
 from src.elements.properties.origin import Origin
+from src.elements.properties.point import Point
 from src.elements.tools.document import Document
 from src.elements.tools.grid import Grid
 from src.elements.tools.page import Page
@@ -90,6 +91,8 @@ class CanvasImplementation(BaseCanvas):
 
                 if child.is_resizing:
                     child.is_resizing ^= 1
+                    child.direction = NONE
+                    child.handler.pivot_control.has_pivot = False
                     self.emit("finish-select", child)
 
         self.has_child = False
@@ -105,20 +108,41 @@ class CanvasImplementation(BaseCanvas):
         x = event.x / self.zoom
         y = event.y / self.zoom
 
+        direction = self.document.get_direction_for_child_at_post(x, y)
+
         # Selection rectangle properties based on mouse motion
         if self.selection.is_active:
             self.selection.width = x - self.selection.x
             self.selection.height = y - self.selection.y
             self.should_update = False
             self.update_canvas()
+
+        # Handle selected children
         elif event.state & Gdk.ModifierType.BUTTON1_MASK:
             for selected_children in self.document.get_current_page().get_children():
                 if selected_children.is_selected:
+                    # New position to perform operation on
+                    target = Point()
+
                     if selected_children.is_resizing:
-                        selected_children.resize(self.grid.get_nearest_axis(x), self.grid.get_nearest_axis(y))
-                    pass
-                else:
-                    pass
+                        # Get nearest point to resize
+                        target.x = self.grid.get_nearest_axis(x)
+                        target.y = self.grid.get_nearest_axis(y)
+
+                        # If has control direction, resize otherwise transform
+                        if direction < ANONYMOUS:
+                            # Resize child
+                            selected_children.resize(target.x, target.y)
+                        else:
+                            selected_children.transform(target.x, target.y)
+                    else:
+
+                        # Get nearest point to move
+                        target.x = self.grid.get_nearest_axis(x - selected_children.offset.x)
+                        target.y = self.grid.get_nearest_axis(y - selected_children.offset.y)
+
+                        # Move child
+                        selected_children.move(target.x, target.y)
 
                 # Update on every resize
                 self.update_canvas()
@@ -140,9 +164,18 @@ class CanvasImplementation(BaseCanvas):
             # Select current selected child
             selected_child.is_selected = True
             selected_child.is_resizing = True
+
+            # Resize child based on the direction of movement
             if selected_child.direction < ANONYMOUS:
-                selected_child.pivot.x = self.grid.get_nearest_axis(x)
-                selected_child.pivot.y = self.grid.get_nearest_axis(y)
+                control = selected_child.handler.controls[opposite(selected_child.direction)]
+
+                selected_child.pivot.x = self.grid.get_nearest_axis(control.x)
+                selected_child.pivot.y = self.grid.get_nearest_axis(control.y)
+
+                selected_child.handler.pivot_control.x = control.x
+                selected_child.handler.pivot_control.y = control.y
+
+                selected_child.handler.pivot_control.is_active = True
 
         # Add child when pressed
         if self.has_child:
@@ -161,11 +194,20 @@ class CanvasImplementation(BaseCanvas):
             current_child.height = 0
             current_child.width = 0
 
+            current_child.direction = SOUTHEAST
+            current_child.handler.controls[opposite(current_child.direction)].y = current_child.y
+            current_child.handler.controls[opposite(current_child.direction)].x = current_child.x
+
             resize_child(current_child)
             self.emit("select", current_child)
             return True
 
         selection = True
+
+        # Move child
+        def move_child(child_to_move, new_x, new_y):
+            child_to_move.offset.x = new_x - child_to_move.x
+            child_to_move.offset.y = new_y - child_to_move.y
 
         # Select a child
         def select_child(child_to_select):
@@ -175,13 +217,24 @@ class CanvasImplementation(BaseCanvas):
             child_to_select.is_selected = True
 
         # Select group of children
-        for page_child in sorted(self.document.get_current_page().get_children(),
-                                 key=lambda page_child: page_child.z_index):
+        for page_child in sorted(self.document.get_current_page().get_children(), key=lambda c: c.z_index):
             if page_child.is_selected:
-                pass
+
+                # Resize child if selected and pointer lies in the handler
+                if page_child.handler.inside_position(x, y):
+                    page_child.direction = page_child.handler.get_direction(x, y)
+                    selection = False
+                    resize_child(page_child)
+                # Move child if is selected and pointer lies inside the object
+                elif page_child.inside_position(x, y):
+                    move_child(page_child, x, y)
+                    selection = False
+                else:
+                    continue
             elif page_child.inside_position(x, y):
                 selection = False
                 select_child(page_child)
+                move_child(page_child, x, y)
             else:
                 continue
 
@@ -224,7 +277,8 @@ class CanvasImplementation(BaseCanvas):
             self.grid.draw(context)
 
         # Draw selection rectangle
-        self.selection.draw(context)
+        if self.selection.is_active:
+            self.selection.draw(context)
 
         self.should_update = True
         self.expose_id = self.connect("draw", self.draw)
@@ -237,8 +291,8 @@ class CanvasImplementation(BaseCanvas):
         self.queue_draw()
 
     # Add shapes to page
-    def add_child(self, child):
-        self.document.get_current_page().add_child(child)
+    def add_child(self, new_child):
+        self.document.add_child(new_child)
 
     # Create a child
     def create_child(self, new_child):
@@ -248,20 +302,17 @@ class CanvasImplementation(BaseCanvas):
 
     # Delete selected child
     def delete_children(self):
-        for child in self.document.get_current_page().get_children():
-            self.document.get_current_page().delete_object(child)
+        self.document.delete_children()
         self.update_canvas()
 
     # Select all children
-    def select_all(self, **args):
-        for child in self.document.get_current_page().get_children():
-            child.is_selected = True
+    def select_all(self):
+        self.document.select_children()
         self.queue_draw()
 
     # Deselect all selected children
     def deselect_all(self):
-        for child in self.document.get_current_page().get_children():
-            child.is_selected = False
+        self.document.deselect_children()
         self.queue_draw()
 
 
@@ -287,7 +338,7 @@ class ExtendedCanvas(CanvasImplementation):
         self.zoom = factor
         self.queue_draw()
 
-    # Zoom in canavs
+    # Zoom in canvas
     def zoom_in(self, factor=0.05):
         return self.scale_factor(factor)
 
@@ -299,17 +350,15 @@ class ExtendedCanvas(CanvasImplementation):
     def zoom_normal(self):
         return self.scale_normal(1.0)
 
-    # Draw children
-    def draw_children(self, page, context):
-        for child in page.children:
-            child.draw(context)
-
     # Save canvas to pdf
     def save_to_pdf(self):
+
         for i, page in enumerate(self.document.pages):
-            surface = cairo.PDFSurface("untitled.pdf", page.width, page.height)
+            surface = cairo.SVGSurface("untitled_" + str(i) + ".svg", page.width, page.height)
             context = cairo.Context(surface)
-            self.draw_children(page, context)
+
+            # Draw all children into surface
+            self.document.draw_children(page, context)
 
             # context.show_page()
             surface.flush()

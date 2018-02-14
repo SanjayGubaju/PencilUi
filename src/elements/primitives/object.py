@@ -1,9 +1,9 @@
 from src.elements.primitives import *
+from src.elements.primitives.handler import Handler
 
 from src.elements.primitives.rectangle import Rectangle
 from src.elements.properties.color import Color
 from src.elements.properties.point import Point
-from src.elements.properties.position import Position
 from src.elements.properties.size import Size
 
 
@@ -11,7 +11,10 @@ class Object(Rectangle):
     def __init__(self):
         Rectangle.__init__(self)
 
+        self.handler = Handler()
+
         self.pivot = Point()
+        self.offset = Point()
 
         self.is_selected = False
 
@@ -24,12 +27,31 @@ class Object(Rectangle):
         self.stroke_color = Color(1, 1, 1, 1)
         self.stroke_width = 0
 
+        self.is_line = False
+
+    # Define position for controls
+    def initialize_controls(self):
+        raise NotImplementedError
+
     def draw(self, context):
-        pass
 
+        if self.is_selected:
+            # Cannot change handler dimension if line
+            if not self.is_line:
+                self.handler.set_dimensions(self.x, self.y, self.width, self.height)
+            self.initialize_controls()
+            self.handler.draw(context)
+
+    # Returns True if x,y lies inside controls
     def inside_position(self, x, y):
-        return self.x <= x <= (self.x + self.width) and self.y <= y <= (self.y + self.height)
+        if not len(self.handler.controls):
+            return False
+        return (x >= (self.x - self.handler.controls[0].size / 2.0)) and (
+            x <= (self.x + self.width + self.handler.controls[0].size / 2.0)) and (
+                   y >= (self.y - self.handler.controls[0].size / 2.0)) and (
+                   y <= (self.y + self.height + self.handler.controls[0].size / 2.0))
 
+    # Returns true if current object lies inside a area
     def in_region(self, x, y, width, height):
         if width < 0:
             x += width
@@ -37,39 +59,41 @@ class Object(Rectangle):
         if height < 0:
             y += height
             height *= -1
-        return (x + width) > self.x and (y + height) > self.y and \
-               x < (self.x + self.width) and y < (self.y + self.height)
+        return (x + width) > self.x and (y + height) > self.y and x < (self.x + self.width) and y < (
+            self.y + self.height)
 
+    # checks if current object is inside a selection window
     def inside_selection(self, selection):
         return self.in_region(selection.x, selection.y, selection.width, selection.height)
 
+    # Resize object based on new x,y
     def resize(self, new_x, new_y):
 
         direction = self.direction
 
-        position = Position()
-        position.x = self.x
-        position.y = self.y
+        point = Point()
+        point.x = self.x
+        point.y = self.y
 
         size = Size()
-        size.x = self.x
-        size.y = self.y
+        size.width = self.width
+        size.height = self.height
 
         direction = get_direction(direction)
 
         if direction is not VERTICAL:
             size.width = new_x - self.pivot.x
             if size.width < 0:
-                position.x = new_x
+                point.x = new_x
             else:
-                position.x = self.pivot.x
+                point.x = self.pivot.x
 
         if direction is not HORIZONTAL:
             size.height = new_y - self.pivot.y
             if size.height < 0:
-                position.y = new_y
+                point.y = new_y
             else:
-                position.y = self.pivot.y
+                point.y = self.pivot.y
 
-        self.set_position(position)
+        self.set_point(point)
         self.set_size(size)

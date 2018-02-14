@@ -1,8 +1,7 @@
 from math import pi
 
-import cairo
-
 from src.elements.primitives.object import Object
+from src.elements.properties.point import Point
 
 
 class Rounded(Object):
@@ -10,6 +9,19 @@ class Rounded(Object):
 
     def __init__(self):
         Object.__init__(self)
+
+    def initialize_controls(self):
+
+        self.handler.set_controls(
+            north_west=Point(self.x, self.y),
+            north_east=Point(self.x + self.width, self.y),
+            south_west=Point(self.x, self.y + self.height),
+            south_east=Point(self.x + self.width, self.y + self.height),
+            north=Point(self.x + abs(self.width / 2), self.y),
+            south=Point(self.x + abs(self.width / 2), self.y + self.height),
+            west=Point(self.x, self.y + abs(self.height / 2)),
+            east=Point(self.x + self.width, self.y + abs(self.height / 2))
+        )
 
     def draw(self, context):
 
@@ -32,11 +44,8 @@ class Rounded(Object):
         context.arc(self.x + radius, self.y + self.height - radius, radius, pi / 2, pi)
         context.close_path()
 
-        if self.is_selected:
-            context.set_source_rgba(1.0, 0.0, 0.0, 0.5)
-        else:
-            context.set_source_rgba(self.fill_color.red, self.fill_color.green, self.fill_color.blue,
-                                    self.fill_color.alpha)
+        context.set_source_rgba(self.fill_color.red, self.fill_color.green, self.fill_color.blue,
+                                self.fill_color.alpha)
 
         context.fill_preserve()
 

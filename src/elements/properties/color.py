@@ -4,6 +4,3 @@ class Color:
         self.green = new_green
         self.blue = new_blue
         self.alpha = new_alpha
-
-    def get_color(self):
-        return ['red', 'green', 'blue', 'alpha']

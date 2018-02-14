@@ -12,9 +12,9 @@ class Grid(Rectangle):
         self.grid_size = 16
 
     def draw(self, context):
-        context.set_antialias(cairo.ANTIALIAS_NONE)
+        context.set_antialias(cairo.ANTIALIAS_GRAY)
         context.set_line_width(1.0 / context.get_matrix()[0])
-        context.set_source_rgba(0.0, 0.0, 0.0, 0.3)
+        context.set_source_rgba(0.0, 0.0, 0.0, 0.2)
         dash = [2.0 / context.get_matrix()[0], 2.0 / context.get_matrix()[0]]
         context.set_dash(dash)
 
