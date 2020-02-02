@@ -1,0 +1,4 @@
+autopep8==1.5
+pycodestyle==2.5.0
+vext==0.7.3
+vext.gi==0.7.0

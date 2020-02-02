@@ -29,4 +29,4 @@ class Control:
 
     def at_position(self, x, y):
         return (self.x - self.stroke_width) <= x <= (self.x + self.size) and (self.y - self.stroke_width) <= y <= (
-            self.y + self.size)
+                self.y + self.size)

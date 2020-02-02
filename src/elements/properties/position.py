@@ -8,4 +8,3 @@ class Position(Point):
     def move(self, new_x, new_y):
         self.x = new_x
         self.y = new_y
-

@@ -47,9 +47,9 @@ class Object(Rectangle):
         if not len(self.handler.controls):
             return False
         return (x >= (self.x - self.handler.controls[0].size / 2.0)) and (
-            x <= (self.x + self.width + self.handler.controls[0].size / 2.0)) and (
-                   y >= (self.y - self.handler.controls[0].size / 2.0)) and (
-                   y <= (self.y + self.height + self.handler.controls[0].size / 2.0))
+                x <= (self.x + self.width + self.handler.controls[0].size / 2.0)) and (
+                       y >= (self.y - self.handler.controls[0].size / 2.0)) and (
+                       y <= (self.y + self.height + self.handler.controls[0].size / 2.0))
 
     # Returns true if current object lies inside a area
     def in_region(self, x, y, width, height):
@@ -60,7 +60,7 @@ class Object(Rectangle):
             y += height
             height *= -1
         return (x + width) > self.x and (y + height) > self.y and x < (self.x + self.width) and y < (
-            self.y + self.height)
+                self.y + self.height)
 
     # checks if current object is inside a selection window
     def inside_selection(self, selection):
