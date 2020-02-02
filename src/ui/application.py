@@ -75,7 +75,7 @@ class Application(Gtk.Window):
             self.create_object("Rectangle")
 
         # Add Oval
-        if event.keyval == Gdk.KEY_p:
+        if event.keyval == Gdk.KEY_l:
             self.create_object("Line")
 
         # Delete shape

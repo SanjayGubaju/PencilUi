@@ -7,8 +7,8 @@ class Grid(Rectangle):
     def __init__(self):
         Rectangle.__init__(self)
 
-        self.is_active = False
-        self.has_snap = False
+        self.is_active = True
+        self.has_snap = True
         self.grid_size = 16
 
     def draw(self, context):

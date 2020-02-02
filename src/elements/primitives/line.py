@@ -11,12 +11,17 @@ class Line(Object):
         Object.__init__(self)
 
         self.is_line = True
+
         self.start_point = Point()
         self.end_point = Point()
+
         self.line_width = 1
 
     def initialize_controls(self):
-        pass
+        self.handler.set_controls(
+            north_west=Point(self.start_point.x, self.start_point.y),
+            south_east=Point(self.end_point.x, self.end_point.y)
+        )
 
     def draw(self, context):
         # line
@@ -36,10 +41,13 @@ class Line(Object):
 
         Object.draw(self, context)
 
-    def resize(self, x, y):
-        Object.resize(self, x, y)
+    def resize(self, new_x, new_y):
+        Object.resize(self, new_x, new_y)
 
-        self.start_point.x = self.pivot.x
-        self.start_point.y = self.pivot.y
-        self.end_point.x = x
-        self.end_point.y = y
+        # Set start point
+        self.start_point.x = self.handler.pivot_control.x
+        self.start_point.y = self.handler.pivot_control.y
+
+        # Set end point
+        self.end_point.x = new_x
+        self.end_point.y = new_y

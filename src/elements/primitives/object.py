@@ -31,7 +31,7 @@ class Object(Rectangle):
 
     # Define position for controls
     def initialize_controls(self):
-        raise NotImplementedError
+        pass
 
     def draw(self, context):
 

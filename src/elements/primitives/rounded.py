@@ -11,7 +11,6 @@ class Rounded(Object):
         Object.__init__(self)
 
     def initialize_controls(self):
-
         self.handler.set_controls(
             north_west=Point(self.x, self.y),
             north_east=Point(self.x + self.width, self.y),
