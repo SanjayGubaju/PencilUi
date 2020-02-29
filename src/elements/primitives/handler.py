@@ -1,5 +1,6 @@
 import cairo
 
+from src import DEBUG
 from src.elements.primitives import ANONYMOUS, NONE
 from src.elements.primitives.control import Control
 from src.elements.primitives.object import NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST, NORTH, SOUTH, WEST, EAST
@@ -18,7 +19,9 @@ class Handler:
         self.stroke_width = 2
 
         self.pivot_control = Control(self.stroke_width)
-        self.pivot_control.has_pivot = True
+        self.pivot_control.has_pivot = False
+
+        self.is_line = False
 
         # Total of 8 controls. Draw all of them.
         # ANONYMOUS is 9th control which is outside the scope
@@ -27,34 +30,39 @@ class Handler:
             self.controls.append(Control(self.stroke_width))
             index += 1
 
-        pass
-
     # Draw handler box
     def draw_handler(self, context):
-        context.set_antialias(cairo.ANTIALIAS_GRAY)
+        if not self.is_line or DEBUG:
+            context.set_antialias(cairo.ANTIALIAS_GRAY)
 
-        # Draw selection rectangle
-        dash = list()
-        context.set_dash(dash)
-        context.rectangle(self.x, self.y, self.width, self.height)
-        context.set_source_rgba(0.0, 0.0, 0.5, 0.0)
-        context.fill_preserve()
+            # Draw selection rectangle
+            dash = list()
+            context.set_dash(dash)
+            context.rectangle(self.x, self.y, self.width, self.height)
+            context.set_source_rgba(0.0, 0.0, 0.5, 0.0)
+            context.fill_preserve()
 
-        # Draw selection border
-        context.set_source_rgba(0.18, 0.76, 1.0, 1.0)
-        context.set_line_width(self.stroke_width / context.get_matrix()[0])
-        context.stroke()
+            # Draw selection border
+            context.set_source_rgba(0.18, 0.76, 1.0, 1.0)
+            context.set_line_width(self.stroke_width / context.get_matrix()[0])
+            context.stroke()
 
-        context.set_antialias(cairo.ANTIALIAS_DEFAULT)
+            context.set_antialias(cairo.ANTIALIAS_DEFAULT)
 
     # Draw all control points
     def draw_control(self, context):
         for control in self.controls:
             control.draw(context)
 
+    # Deselect all controls
+    def deselect_all_controls(self):
+        for control in self.controls:
+            control.is_active = False
+
     def draw(self, context):
         self.draw_handler(context)
         self.draw_control(context)
+
         if self.pivot_control.has_pivot:
             self.pivot_control.draw(context)
 

@@ -12,7 +12,7 @@ class Page(Paper):
         Paper.draw(self, context)
 
         # Draw child elements in page
-        for shape in sorted(self.children, key=lambda shape: shape.z_index):
+        for shape in sorted(self.children, key=lambda s: s.z_index):
             shape.draw(context)
 
     def add_child(self, child):

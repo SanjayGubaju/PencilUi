@@ -25,7 +25,7 @@ class Rounded(Object):
     def draw(self, context):
 
         # Radius of oval
-        radius = float(0)
+        radius = float(50)
 
         if radius > (self.height / 2) or radius > (self.width / 2):
             if (self.height / 2) < (self.width / 2):

@@ -136,13 +136,12 @@ class CanvasImplementation(BaseCanvas):
                         else:
                             selected_children.transform(target.x, target.y)
                     else:
-
                         # Get nearest point to move
                         target.x = self.grid.get_nearest_axis(x - selected_children.offset.x)
                         target.y = self.grid.get_nearest_axis(y - selected_children.offset.y)
 
                         # Move child
-                        selected_children.move(target.x, target.y)
+                        selected_children.move_position(target.x, target.y)
 
                 # Update on every resize
                 self.update_canvas()
@@ -175,6 +174,7 @@ class CanvasImplementation(BaseCanvas):
                 selected_child.handler.pivot_control.x = control.x
                 selected_child.handler.pivot_control.y = control.y
 
+                # Activate handler control
                 selected_child.handler.pivot_control.is_active = True
 
         # Add child when pressed
@@ -350,8 +350,8 @@ class ExtendedCanvas(CanvasImplementation):
     def zoom_normal(self):
         return self.scale_normal(1.0)
 
-    # Save canvas to pdf
-    def save_to_pdf(self):
+    # Save canvas to svg
+    def save_to_svg(self):
 
         for i, page in enumerate(self.document.pages):
             surface = cairo.SVGSurface("untitled_" + str(i) + ".svg", page.width, page.height)

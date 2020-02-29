@@ -30,6 +30,7 @@ class Document:
     def deselect_children(self):
         for child in self.get_current_page().get_children():
             child.is_selected = False
+            child.handler.deselect_all_controls()
 
     def select_children(self):
         for child in self.get_current_page().get_children():

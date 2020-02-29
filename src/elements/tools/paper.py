@@ -25,5 +25,3 @@ class Paper(Margins):
         context.set_antialias(cairo.ANTIALIAS_DEFAULT)
 
         context.restore()
-
-        pass

@@ -85,7 +85,7 @@ class Application(Gtk.Window):
         # Save canvas
         if event.state & Gdk.ModifierType.CONTROL_MASK:
             if event.keyval == Gdk.KEY_s:
-                self.editor.canvas.save_to_pdf()
+                self.editor.canvas.save_to_svg()
             elif event.keyval == Gdk.KEY_0 or event.keyval == Gdk.KEY_KP_0:
                 self.editor.zoom_reset()
             elif event.keyval == Gdk.KEY_g:

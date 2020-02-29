@@ -10,12 +10,12 @@ class Line(Object):
     def __init__(self):
         Object.__init__(self)
 
-        self.is_line = True
+        self.handler.is_line = True
 
         self.start_point = Point()
         self.end_point = Point()
 
-        self.line_width = 1
+        self.line_width = 2
 
     def initialize_controls(self):
         self.handler.set_controls(
@@ -24,6 +24,7 @@ class Line(Object):
         )
 
     def draw(self, context):
+
         # line
         context.move_to(self.start_point.x, self.start_point.y)
         context.line_to(self.end_point.x, self.end_point.y)
@@ -34,8 +35,9 @@ class Line(Object):
         if self.is_selected:
             context.set_source_rgba(0.18, 0.76, 1.0, 1.0)
         else:
-            context.set_source_rgba(self.fill_color.red, self.fill_color.green, self.fill_color.blue,
-                                    self.fill_color.alpha)
+            context.set_source_rgba(self.fill_color.red, self.fill_color.green,
+                                    self.fill_color.blue, self.fill_color.alpha)
+
         context.set_line_width(self.line_width)
         context.stroke()
 
@@ -51,3 +53,9 @@ class Line(Object):
         # Set end point
         self.end_point.x = new_x
         self.end_point.y = new_y
+
+    def move_position(self, new_x, new_y):
+        Object.move_position(self, new_x, new_y)
+
+        self.offset.x = self.start_point.x + new_x
+        self.offset.y = self.start_point.y + new_y

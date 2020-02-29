@@ -1,6 +1,6 @@
 from src.elements.primitives import *
+from src.elements.primitives import get_direction
 from src.elements.primitives.handler import Handler
-
 from src.elements.primitives.rectangle import Rectangle
 from src.elements.properties.color import Color
 from src.elements.properties.point import Point
@@ -27,18 +27,13 @@ class Object(Rectangle):
         self.stroke_color = Color(1, 1, 1, 1)
         self.stroke_width = 0
 
-        self.is_line = False
-
     # Define position for controls
     def initialize_controls(self):
         pass
 
     def draw(self, context):
-
         if self.is_selected:
-            # Cannot change handler dimension if line
-            if not self.is_line:
-                self.handler.set_dimensions(self.x, self.y, self.width, self.height)
+            self.handler.set_dimensions(self.x, self.y, self.width, self.height)
             self.initialize_controls()
             self.handler.draw(context)
 
@@ -69,7 +64,8 @@ class Object(Rectangle):
     # Resize object based on new x,y
     def resize(self, new_x, new_y):
 
-        direction = self.direction
+        # Deselect all control selection
+        self.handler.deselect_all_controls()
 
         point = Point()
         point.x = self.x
@@ -79,7 +75,8 @@ class Object(Rectangle):
         size.width = self.width
         size.height = self.height
 
-        direction = get_direction(direction)
+        # Get current vertical or horizontal direction
+        direction = get_direction(self.direction)
 
         if direction is not VERTICAL:
             size.width = new_x - self.pivot.x
@@ -94,6 +91,10 @@ class Object(Rectangle):
                 point.y = new_y
             else:
                 point.y = self.pivot.y
+
+        # Active control.
+        control = self.handler.controls[self.direction]
+        control.is_active = True
 
         self.set_point(point)
         self.set_size(size)

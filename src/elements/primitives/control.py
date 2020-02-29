@@ -5,7 +5,7 @@ import cairo
 
 class Control:
     def __init__(self, stroke_width):
-        self.is_active = True
+        self.is_active = False
 
         self.x = 0
         self.y = 0
@@ -22,8 +22,12 @@ class Control:
         context.fill_preserve()
 
         # Draw selection border
-        context.set_source_rgba(0.18, 0.76, 1.0, 1.0)
+        if self.is_active:
+            context.set_source_rgba(0.18, 0.76, 1.0, 1.0)
+        else:
+            context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
         context.set_line_width(self.stroke_width / context.get_matrix()[0])
+
         context.stroke()
         context.set_antialias(cairo.ANTIALIAS_DEFAULT)
 
